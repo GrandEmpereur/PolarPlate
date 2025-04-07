@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PolarPlate
 
-## Getting Started
+![PolarPlate](https://img.shields.io/badge/PolarPlate-v1.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-First, run the development server:
+PolarPlate est un boilerplate moderne et robuste pour le développement d'applications web full-stack. Cette stack technique soigneusement sélectionnée combine les technologies de pointe pour offrir une expérience de développement optimale et des performances exceptionnelles.
+
+## 🚀 Technologies
+
+- **[Next.js 15](https://nextjs.org/)** - Framework React avec rendu hybride, App Router et Server Components
+- **[Supabase](https://supabase.com/)** - Alternative open source à Firebase pour la gestion de base de données PostgreSQL
+- **[Better Auth](https://betterauth.io/)** - Solution d'authentification avancée et sécurisée
+- **[Polar.sh](https://polar.sh/)** - Plateforme de gestion pour projets open source
+- **[Prisma](https://www.prisma.io/)** - ORM nouvelle génération pour TypeScript et Node.js
+- **[Tailwind CSS v4](https://tailwindcss.com/)** - Framework CSS utilitaire pour un design rapide et responsive
+- **[shadcn/ui](https://ui.shadcn.com/)** - Composants React accessibles et réutilisables
+- **[Bun](https://bun.sh/)** - Runtime JavaScript ultra-rapide et gestionnaire de paquets
+
+## ✨ Caractéristiques
+
+- **Architecture moderne** - App Router de Next.js avec React Server Components
+- **UI/UX optimisée** - Design system complet avec composants personnalisables
+- **Authentification robuste** - Multiples stratégies d'authentification intégrées
+- **Base de données flexible** - Modèles Prisma typés et migrations automatisées
+- **Performance optimale** - Déploiements rapides et temps de chargement minimaux
+- **DX exceptionnelle** - Configuration prête à l'emploi pour un développement fluide
+- **TypeScript natif** - Support complet de TypeScript pour une meilleure maintenabilité
+
+## 🛠️ Pour commencer
+
+### Prérequis
+
+- Node.js 18+
+- Bun installé globalement
+- Compte Supabase (pour la base de données)
+
+### Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+# Cloner le dépôt
+git clone https://github.com/GrandEmpereur/polarplate.git
+cd polarplate
+
+# Installer les dépendances
+bun install
+
+# Configurer les variables d'environnement
+cp .env.example .env.local
+# Remplir les variables dans .env.local
+
+# Lancer le serveur de développement
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ouvrez [http://localhost:3000](http://localhost:3000) avec votre navigateur pour voir le résultat.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📚 Structure du projet
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+polarplate/
+├── app/               # App Router de Next.js
+├── components/        # Composants réutilisables
+├── lib/              # Utilitaires et helpers
+├── prisma/           # Schéma et migrations Prisma
+├── public/           # Fichiers statiques
+└── ...
+```
 
-## Learn More
+## 📝 Documentation
 
-To learn more about Next.js, take a look at the following resources:
+Pour une documentation plus détaillée, consultez les ressources suivantes :
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [Documentation Next.js](https://nextjs.org/docs)
+- [Guide Supabase](https://supabase.com/docs)
+- [Documentation Prisma](https://www.prisma.io/docs)
+- [Guide shadcn/ui](https://ui.shadcn.com/docs)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🤝 Contribution
 
-## Deploy on Vercel
+Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou à soumettre une pull request.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📄 Licence
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
