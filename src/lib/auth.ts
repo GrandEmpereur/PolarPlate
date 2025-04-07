@@ -21,6 +21,18 @@ export const auth = betterAuth({
             })
         },
     },
+    emailVerification: {
+        sendOnSignUp: true,
+        autoSignInAfterVerification: true,
+        sendVerificationEmail: async ({ user, url, token }, request) => {
+            await resend.emails.send({
+                from: "no-reply@bartosik.fr",
+                to: user.email,
+                subject: "Verify your email address",
+                text: `Click the link to verify your email: ${url}`
+            })
+        }
+    },
     socialProviders: {
         github: {
             clientId: process.env.GITHUB_CLIENT_ID as string,
