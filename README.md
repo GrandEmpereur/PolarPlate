@@ -38,7 +38,7 @@ PolarPlate est un boilerplate moderne et robuste pour le développement d'applic
 
 ```bash
 # Cloner le dépôt
-git clone https://github.com/votre-username/polarplate.git
+git clone https://github.com/GrandEmpereur/polarplate.git
 cd polarplate
 
 # Installer les dépendances
