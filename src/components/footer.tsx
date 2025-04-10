@@ -355,7 +355,7 @@ export function Footer() {
           
           <div className="flex flex-wrap justify-center items-center gap-6">
             <Link 
-              href="/sitemap" 
+              href="/sitemap.xml" 
               className="text-xs text-muted-foreground/70 hover:text-primary transition-colors group flex items-center"
             >
               <motion.span
