@@ -3,6 +3,10 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import prisma from "./prisma";
 import { resend } from "./resend";
 import { nextCookies } from "better-auth/next-js";
+import { stripe } from "@better-auth/stripe"
+import Stripe from "stripe"
+
+const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
@@ -12,15 +16,11 @@ export const auth = betterAuth({
         enabled: true,
         requireEmailVerification: true,
         async sendResetPassword({ user, url, token }) {
-            try {
-                console.log("📧 Envoi d'email de réinitialisation à:", user.email);
-                console.log("🔗 URL de réinitialisation:", url);
-
-                const result = await resend.emails.send({
-                    from: "PolarPlate <no-reply@bartosik.fr>",
-                    to: user.email,
-                    subject: "Réinitialisation de votre mot de passe",
-                    html: `
+            await resend.emails.send({
+                from: "PolarPlate <no-reply@bartosik.fr>",
+                to: user.email,
+                subject: "Réinitialisation de votre mot de passe",
+                html: `
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
                         <h2 style="color: #333; text-align: center; margin-bottom: 30px;">Réinitialisation de votre mot de passe</h2>
                         <p>Bonjour ${user.name || 'utilisateur'},</p>
@@ -36,45 +36,26 @@ export const auth = betterAuth({
                         </div>
                     </div>
                     `,
-                    text: `Bonjour ${user.name || 'utilisateur'},
-
-Nous avons reçu une demande de réinitialisation de mot de passe pour votre compte PolarPlate.
-
-Cliquez sur le lien ci-dessous pour définir un nouveau mot de passe :
-${url}
-
-Si vous n'avez pas demandé de réinitialisation de mot de passe, vous pouvez ignorer cet email.
-
-Ce lien expirera dans 24 heures pour des raisons de sécurité.
-
-© ${new Date().getFullYear()} PolarPlate. Tous droits réservés.`
-                });
-
-                if (result.error) {
-                    console.error("❌ Erreur d'envoi d'email de réinitialisation:", result.error);
-                    throw new Error(`Échec de l'envoi d'email: ${result.error}`);
-                }
-
-                console.log("✅ Email de réinitialisation envoyé avec succès, ID:", result.data?.id);
-            } catch (error) {
-                console.error("❌ Exception lors de l'envoi d'email de réinitialisation:", error);
-                throw error; // On relance l'erreur car la réinitialisation ne doit pas continuer si l'email échoue
-            }
+                text: `Bonjour ${user.name || 'utilisateur'},
+                    Nous avons reçu une demande de réinitialisation de mot de passe pour votre compte PolarPlate.
+                    Cliquez sur le lien ci-dessous pour définir un nouveau mot de passe :
+                    ${url}
+                    Si vous n'avez pas demandé de réinitialisation de mot de passe, vous pouvez ignorer cet email.
+                    Ce lien expirera dans 24 heures pour des raisons de sécurité.
+                    © ${new Date().getFullYear()} PolarPlate. Tous droits réservés
+                    `
+            });
         },
     },
     emailVerification: {
         sendOnSignUp: true,
         autoSignInAfterVerification: true,
         sendVerificationEmail: async ({ user, url, token }) => {
-            try {
-                console.log("📧 Envoi d'email de vérification à:", user.email);
-                console.log("🔗 URL de vérification:", url);
-
-                const result = await resend.emails.send({
-                    from: "PolarPlate <no-reply@bartosik.fr>",
-                    to: user.email,
-                    subject: "Vérifiez votre adresse email",
-                    html: `
+            await resend.emails.send({
+                from: "PolarPlate <no-reply@bartosik.fr>",
+                to: user.email,
+                subject: "Vérifiez votre adresse email",
+                html: `
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
                         <h2 style="color: #333; text-align: center; margin-bottom: 30px;">Vérification de votre email</h2>
                         <p>Bonjour ${user.name || 'utilisateur'},</p>
@@ -89,29 +70,13 @@ Ce lien expirera dans 24 heures pour des raisons de sécurité.
                         </div>
                     </div>
                     `,
-                    text: `Bonjour ${user.name || 'utilisateur'},
-
-Merci de vous être inscrit sur PolarPlate ! Pour finaliser votre inscription, nous devons vérifier votre adresse email.
-
-Cliquez sur le lien ci-dessous pour confirmer votre adresse email :
-${url}
-
-Si vous n'êtes pas à l'origine de cette inscription, vous pouvez ignorer cet email.
-
-© ${new Date().getFullYear()} PolarPlate. Tous droits réservés.`
-                });
-
-                if (result.error) {
-                    console.error("❌ Erreur d'envoi d'email de vérification:", result.error);
-                    throw new Error(`Échec de l'envoi d'email: ${result.error}`);
-                }
-
-                console.log("✅ Email de vérification envoyé avec succès, ID:", result.data?.id);
-            } catch (error) {
-                console.error("❌ Exception lors de l'envoi d'email de vérification:", error);
-                // On ne relance pas l'erreur pour éviter de bloquer l'inscription,
-                // mais on la log pour le débogage
-            }
+                text: `Bonjour ${user.name || 'utilisateur'},
+                    Merci de vous être inscrit sur PolarPlate ! Pour finaliser votre inscription, nous devons vérifier votre adresse email.
+                    Cliquez sur le lien ci-dessous pour confirmer votre adresse email :
+                    ${url}
+                    Si vous n'êtes pas à l'origine de cette inscription, vous pouvez ignorer cet email.
+                    © ${new Date().getFullYear()} PolarPlate. Tous droits réservés.`
+            });
         }
     },
     socialProviders: {
@@ -125,6 +90,110 @@ Si vous n'êtes pas à l'origine de cette inscription, vous pouvez ignorer cet e
         }
     },
     plugins: [
-        nextCookies()
+        nextCookies(),
+        stripe({
+            stripeClient,
+            stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
+            createCustomerOnSignUp: true,
+            customerIdField: "stripeCustomerId",
+            onCustomerCreate: async ({ customer, stripeCustomer, user }) => {
+                console.log(`Client Stripe ${customer.id} créé pour l'utilisateur ${user.id}`);
+            },
+            getCustomerCreateParams: async ({ user, session }) => {
+                return {
+                    metadata: {
+                        userId: user.id,
+                        signupDate: new Date().toISOString()
+                    },
+                    description: `Utilisateur: ${user.name || user.email}`
+                };
+            },
+            onEvent: async (event) => {
+                switch (event.type) {
+                    case "invoice.paid":
+                        console.log(`Facture payée: ${event.id}`);
+                        break;
+                    case "payment_intent.succeeded":
+                        console.log(`Paiement réussi: ${event.id}`);
+                        break;
+                }
+            },
+            subscription: {
+                enabled: true,
+                plans: [
+                    {
+                        name: "FREE",
+                        limits: {
+                            projects: 3,
+                            storage: 100,
+                            api_requests: 1000
+                        }
+                    },
+                    {
+                        name: "PRO",
+                        priceId: process.env.STRIPE_PRICE_ID_PRO as string,
+                        limits: {
+                            projects: 10,
+                            storage: 5000,
+                            api_requests: 10000
+                        },
+                        freeTrial: {
+                            days: 14,
+                            onTrialStart: async (subscription) => {
+                                console.log(`Essai du plan PRO démarré pour l'abonnement ${subscription.id}`);
+                                // Envoyer un email de bienvenue pour l'essai
+                            },
+                            onTrialEnd: async ({ subscription }) => {
+                                console.log(`Essai du plan PRO terminé pour l'abonnement ${subscription.id}`);
+                                // Envoyer une notification de fin d'essai
+                            }
+                        }
+                    },
+                    {
+                        name: "ENTERPRISE",
+                        priceId: process.env.STRIPE_PRICE_ID_ENTERPRISE as string,
+                        limits: {
+                            projects: 50,
+                            storage: 50000,
+                            api_requests: 100000
+                        }
+                    }
+                ],
+                onSubscriptionComplete: async ({ subscription, plan }) => {
+                    console.log(`Abonnement ${subscription.id} créé pour le plan ${plan.name}`);
+                },
+                onSubscriptionUpdate: async ({ subscription }) => {
+                    console.log(`Abonnement ${subscription.id} mis à jour`);
+                },
+                onSubscriptionCancel: async ({ subscription, cancellationDetails }) => {
+                    console.log(`Abonnement ${subscription.id} annulé, raison: ${cancellationDetails?.reason || 'Non spécifiée'}`);
+                },
+                onSubscriptionDeleted: async ({ subscription }) => {
+                    console.log(`Abonnement ${subscription.id} supprimé`);
+                },
+                getCheckoutSessionParams: async ({ user, plan }) => {
+                    return {
+                        params: {
+                            allow_promotion_codes: true,
+                            tax_id_collection: {
+                                enabled: true
+                            },
+                            billing_address_collection: "required",
+                            custom_text: {
+                                submit: {
+                                    message: "Nous allons démarrer votre abonnement immédiatement"
+                                }
+                            },
+                            metadata: {
+                                userId: user.id
+                            }
+                        },
+                        options: {
+                            idempotencyKey: `sub_${user.id}_${plan.name}_${Date.now()}`
+                        }
+                    };
+                }
+            }
+        })
     ]
 });
