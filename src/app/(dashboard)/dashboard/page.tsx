@@ -28,7 +28,7 @@ export default async function Dashboard() {
   
   // Protection de la route - rediriger si non authentifié
   if (!userResult) {
-    redirect("/auth/signin");
+    redirect("/auth/sign-in");
   }
 
   // Cast de l'utilisateur avec le type étendu
@@ -93,7 +93,7 @@ export default async function Dashboard() {
             <form action={async () => {
               "use server";
               await signOut();
-              redirect("/auth/signin");
+              redirect("/auth/sign-in");
             }}>
               <Button variant="destructive" type="submit" className="gap-2">
                 <LogOut className="h-4 w-4" />

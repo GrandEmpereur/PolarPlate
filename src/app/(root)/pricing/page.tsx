@@ -37,7 +37,7 @@ const plans = [
     icon: Users,
     gradient: "from-blue-500/20 to-cyan-500/20",
     borderColor: "border-blue-500/30",
-    href: "/auth/signup",
+    href: "/auth/sign-up",
     planType: PLAN_TYPES.FREE
   },
   {
@@ -133,7 +133,7 @@ export default function PricingPage() {
 
     // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
     if (!data) {
-      window.location.href = `/auth/signin?redirect=${encodeURIComponent(plan.href)}`;
+      window.location.href = `/auth/sign-in?redirect=${encodeURIComponent(plan.href)}`;
       return;
     }
 

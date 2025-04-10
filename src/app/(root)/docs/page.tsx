@@ -17,7 +17,9 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Check, Database, Key, Layout, Package, Server, Zap } from "lucide-react";
+import { Check, Database, Key, Layout, Package, Server, Zap, ExternalLink } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function DocumentationPage() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -31,21 +33,24 @@ export default function DocumentationPage() {
         className="space-y-6"
       >
         <div className="text-center mb-12">
+          <Badge variant="outline" className="mb-4 px-3 py-1 text-sm rounded-full border-primary/30">
+            DOCUMENTATION TECHNIQUE
+          </Badge>
           <motion.h1 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="text-4xl md:text-5xl font-bold tracking-tight"
+            className="text-4xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80"
           >
-            Documentation PolarPlate
+            Solution complète pour votre SaaS
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="mt-4 text-xl text-muted-foreground"
+            className="mt-4 text-xl text-muted-foreground max-w-2xl mx-auto"
           >
-            Guide complet de la stack technique et de l'architecture
+            Une architecture robuste et performante conçue pour un développement rapide
           </motion.p>
         </div>
 
@@ -118,84 +123,134 @@ export default function DocumentationPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 mb-8">
+                  {techLogos.map((tech) => (
+                    <div 
+                      key={tech.name}
+                      className="flex flex-col items-center p-4 rounded-lg hover:bg-card/80 transition-colors group"
+                    >
+                      <motion.div 
+                        whileHover={{ scale: 1.05 }}
+                        className="flex items-center justify-center w-16 h-16 rounded-full bg-card/50 mb-3 overflow-hidden relative"
+                      >
+                        <Image 
+                          src={tech.logo} 
+                          alt={tech.name} 
+                          width={50} 
+                          height={50} 
+                          className="object-contain z-10 relative" 
+                        />
+                        <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors" />
+                      </motion.div>
+                      <span className="font-medium text-sm text-center">{tech.name}</span>
+                    </div>
+                  ))}
+                </div>
+
                 <Accordion type="single" collapsible className="w-full">
                   <TechItem 
                     title="Next.js 15" 
                     version="15.2.4"
                     description="Framework React avec App Router, Server Components et optimisations avancées"
                     usage="Structure de l'application, rendu hybride (SSR/SSG), API routes"
+                    logoSrc="/svg/nextjs.svg"
+                    websiteUrl="https://nextjs.org/"
                   />
                   <TechItem 
                     title="React 19" 
                     version="19.0.0"
                     description="Bibliothèque UI avec les dernières fonctionnalités de React"
                     usage="Construction de l'interface utilisateur et composants interactifs"
+                    logoSrc="/svg/react.svg"
+                    websiteUrl="https://react.dev/"
                   />
                   <TechItem 
                     title="TypeScript" 
                     version="5+"
                     description="Superset typé de JavaScript pour une meilleure maintenabilité"
                     usage="Typage statique pour tous les fichiers source du projet"
+                    logoSrc="/svg/typescript.svg"
+                    websiteUrl="https://www.typescriptlang.org/"
                   />
                   <TechItem 
                     title="Tailwind CSS" 
                     version="4"
                     description="Framework CSS utilitaire hautement personnalisable"
                     usage="Styling de tous les composants avec l'approche utility-first"
+                    logoSrc="/svg/tailwind.svg"
+                    websiteUrl="https://tailwindcss.com/"
                   />
                   <TechItem 
                     title="Shadcn UI" 
                     version="Latest"
                     description="Collection de composants UI réutilisables basés sur Radix UI"
                     usage="Composants d'interface accessibles et hautement personnalisables"
+                    logoSrc="/svg/shadcnui.svg"
+                    websiteUrl="https://ui.shadcn.com/"
                   />
                   <TechItem 
                     title="Framer Motion" 
                     version="12.6.3"
                     description="Bibliothèque d'animations pour React"
                     usage="Animations et transitions fluides dans l'interface utilisateur"
+                    logoSrc="/svg/framermotion.svg"
+                    websiteUrl="https://www.framer.com/motion/"
                   />
                   <TechItem 
                     title="Prisma" 
                     version="6.5.0"
                     description="ORM moderne pour TypeScript et Node.js"
                     usage="Modélisation de la base de données, migrations et requêtes typées"
+                    logoSrc="/svg/prisma.svg"
+                    websiteUrl="https://www.prisma.io/"
                   />
                   <TechItem 
                     title="Supabase" 
                     version="Latest"
                     description="Alternative open source à Firebase avec PostgreSQL"
                     usage="Hébergement de base de données PostgreSQL"
+                    logoSrc="/svg/supabase.svg"
+                    websiteUrl="https://supabase.com/"
                   />
                   <TechItem 
                     title="Better Auth" 
                     version="1.2.5"
                     description="Solution d'authentification complète pour Next.js"
                     usage="Système d'authentification, sessions, vérification d'email, OAuth"
+                    logoSrc="/svg/auth.svg"
+                    websiteUrl="https://betterauth.luke.software/"
                   />
                   <TechItem 
                     title="Stripe" 
                     version="18.0.0"
                     description="Plateforme de paiement en ligne"
                     usage="Gestion des paiements, abonnements et webhooks"
+                    logoSrc="/svg/stripe.svg"
+                    websiteUrl="https://stripe.com/"
                   />
                   <TechItem 
                     title="Resend" 
                     version="4.2.0"
                     description="API email moderne pour les développeurs"
                     usage="Envoi d'emails transactionnels et de notifications"
+                    logoSrc="/svg/resend.svg"
+                    websiteUrl="https://resend.com/"
                   />
                   <TechItem 
                     title="Zod" 
                     version="3.24.2"
                     description="Bibliothèque de validation de schéma TypeScript-first"
                     usage="Validation des données d'entrée et garantie d'intégrité"
+                    logoSrc="/svg/zod.svg"
+                    websiteUrl="https://zod.dev/"
                   />
                   <TechItem 
                     title="bun.sh" 
                     version="Latest"
                     description="Runtime JavaScript tout-en-un et gestionnaire de paquets"
                     usage="Gestionnaire de paquets et exécution des scripts"
+                    logoSrc="/svg/bun.svg"
+                    websiteUrl="https://bun.sh/"
                   />
                 </Accordion>
               </CardContent>
@@ -579,6 +634,18 @@ export default function DocumentationPage() {
 }
 
 // Composants utilitaires
+
+const techLogos = [
+  { name: "Next.js", logo: "/svg/nextjs.svg" },
+  { name: "React", logo: "/svg/react.svg" },
+  { name: "TypeScript", logo: "/svg/typescript.svg" },
+  { name: "Tailwind CSS", logo: "/svg/tailwind.svg" },
+  { name: "Shadcn UI", logo: "/svg/shadcnui.svg" },
+  { name: "Framer Motion", logo: "/svg/framermotion.svg" },
+  { name: "Prisma", logo: "/svg/prisma.svg" },
+  { name: "Supabase", logo: "/svg/supabase.svg" },
+];
+
 function Feature({ icon, title, description }) {
   return (
     <div className="flex flex-col gap-2">
@@ -600,24 +667,48 @@ function ListItem({ children }) {
   );
 }
 
-function TechItem({ title, version, description, usage }) {
+function TechItem({ title, version, description, usage, logoSrc, websiteUrl }) {
   return (
     <AccordionItem value={title.toLowerCase().replace(/\s+/g, "-")}>
       <AccordionTrigger className="hover:no-underline">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          {logoSrc && (
+            <div className="w-8 h-8 relative flex-shrink-0 rounded-md overflow-hidden bg-card/30">
+              <Image 
+                src={logoSrc} 
+                alt={`Logo ${title}`} 
+                width={32} 
+                height={32}
+                className="object-contain" 
+              />
+            </div>
+          )}
           <span>{title}</span>
           <Badge variant="outline" className="ml-2 font-mono">v{version}</Badge>
         </div>
       </AccordionTrigger>
-      <AccordionContent className="space-y-2 pt-2">
-        <div>
-          <p className="font-medium text-sm">Description:</p>
-          <p className="text-muted-foreground text-sm">{description}</p>
+      <AccordionContent className="space-y-4 pt-4">
+        <div className="space-y-2 border-l-2 border-primary/20 pl-4">
+          <div>
+            <p className="font-medium text-sm">Description:</p>
+            <p className="text-muted-foreground text-sm">{description}</p>
+          </div>
+          <div>
+            <p className="font-medium text-sm">Utilisation:</p>
+            <p className="text-muted-foreground text-sm">{usage}</p>
+          </div>
         </div>
-        <div>
-          <p className="font-medium text-sm">Utilisation:</p>
-          <p className="text-muted-foreground text-sm">{usage}</p>
-        </div>
+        {websiteUrl && (
+          <Link 
+            href={websiteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
+          >
+            Documentation officielle
+            <ExternalLink className="h-3 w-3" />
+          </Link>
+        )}
       </AccordionContent>
     </AccordionItem>
   );

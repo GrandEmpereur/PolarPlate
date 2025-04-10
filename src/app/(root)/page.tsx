@@ -80,7 +80,7 @@ export default function Home() {
             className="flex flex-col sm:flex-row gap-4"
           >
             <Button asChild size="lg" className="group relative overflow-hidden">
-              <Link href="/auth/signup">
+              <Link href="/auth/sign-up">
                 Essayer gratuitement
                 <Sparkles className="ml-2 h-4 w-4 animate-pulse" />
                 <span className="absolute bottom-0 left-0 h-1 bg-primary-foreground/20 w-0 group-hover:w-full transition-all duration-300"></span>
@@ -328,7 +328,7 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg">
-                <Link href="/auth/signup">
+                <Link href="/auth/sign-up">
                   <Rocket className="mr-2 h-4 w-4" />
                   Créer un compte
                 </Link>
@@ -408,18 +408,17 @@ const features = [
 ];
 
 const technologies = [
-  { name: "Next.js 15", logo: "/next.svg" },
-  { name: "Supabase", logo: "/supabase.svg" },
-  { name: "Better Auth", logo: "/auth.svg" },
-  { name: "Polar.sh", logo: "/polar.svg" },
-  { name: "Prisma", logo: "/prisma.svg" },
-  { name: "Tailwind CSS", logo: "/tailwind.svg" },
-  { name: "shadcn/ui", logo: "/shadcn.svg" },
-  { name: "Bun.sh", logo: "/bun.svg" },
-  { name: "Stripe", logo: "/stripe.svg" },
-  { name: "TypeScript", logo: "/typescript.svg" },
-  { name: "Framer Motion", logo: "/framer.svg" },
-  { name: "Resend", logo: "/resend.svg" },
+  { name: "Next.js 15", logo: "/svg/nextjs.svg" },
+  { name: "Supabase", logo: "/svg/supabase.svg" },
+  { name: "Better Auth", logo: "/better-auth.png" },
+  { name: "Prisma", logo: "/svg/prisma.svg" },
+  { name: "Tailwind CSS", logo: "/svg/tailwind.svg" },
+  { name: "shadcn/ui", logo: "/svg/shadcnui.svg" },
+  { name: "Bun.sh", logo: "/svg/bun.svg" },
+  { name: "Stripe", logo: "/svg/stripe.svg" },
+  { name: "TypeScript", logo: "/svg/typescript.svg" },
+  { name: "Framer Motion", logo: "/svg/framermotion.svg" },
+  { name: "Resend", logo: "/svg/resend.svg" },
 ];
 
 const testimonials = [
@@ -460,7 +459,7 @@ const plans = [
       "Authentification de base"
     ],
     buttonText: "Commencer gratuitement",
-    link: "/auth/signup",
+    link: "/auth/sign-up",
     popular: false
   },
   {
@@ -478,7 +477,7 @@ const plans = [
       "Essai gratuit de 14 jours"
     ],
     buttonText: "Essayer gratuitement",
-    link: "/auth/signup?plan=pro",
+    link: "/auth/sign-up?plan=pro",
     popular: true
   },
   {

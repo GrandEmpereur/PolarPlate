@@ -12,7 +12,7 @@ export default async function DashboardLayout({
   const user = await getUser();
   
   if (!user) {
-    redirect('/auth/signin');
+    redirect('/auth/sign-in');
   }
 
   return (

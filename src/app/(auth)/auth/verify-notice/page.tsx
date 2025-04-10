@@ -85,7 +85,7 @@ function VerifyNoticeContent() {
       <CardFooter className="flex-col space-y-4 border-t border-border/40 bg-muted/20 p-6">
         <div className="text-center text-sm">
           <Link
-            href="/auth/signin"
+            href="/auth/sign-in"
             className="inline-flex items-center text-primary hover:underline font-medium"
           >
             <ArrowLeft className="mr-1 h-3 w-3" /> Retour à la page de connexion

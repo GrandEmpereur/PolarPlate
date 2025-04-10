@@ -25,7 +25,7 @@ function SuccessContent() {
   // Redirige vers la page de connexion si l'utilisateur n'est pas authentifié
   useEffect(() => {
     if (!isLoading && !data) {
-      router.push("/auth/signin");
+      router.push("/auth/sign-in");
     }
   }, [isLoading, data, router]);
 
