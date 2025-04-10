@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { auth } from "./auth";
+import prisma from "./prisma";
 
 export const getUser = async () => {
     try {
@@ -8,7 +9,22 @@ export const getUser = async () => {
             headers: await headers()
         });
 
-        return session?.user;
+        if (!session?.user) {
+            return null;
+        }
+
+        // Récupérer les informations complètes de l'utilisateur depuis la DB
+        const userWithPlan = await prisma.user.findUnique({
+            where: { id: session.user.id },
+            include: {
+                subscriptions: {
+                    orderBy: { createdAt: 'desc' },
+                    take: 1
+                }
+            }
+        });
+
+        return userWithPlan || session.user;
     } catch (error) {
         return null;
     }
