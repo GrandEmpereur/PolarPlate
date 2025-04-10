@@ -96,6 +96,104 @@ export const auth = betterAuth({
             stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
             createCustomerOnSignUp: true,
             customerIdField: "stripeCustomerId",
+            onCustomerCreate: async ({ customer, stripeCustomer, user }) => {
+                console.log(`Client Stripe ${customer.id} créé pour l'utilisateur ${user.id}`);
+            },
+            getCustomerCreateParams: async ({ user, session }) => {
+                return {
+                    metadata: {
+                        userId: user.id,
+                        signupDate: new Date().toISOString()
+                    },
+                    description: `Utilisateur: ${user.name || user.email}`
+                };
+            },
+            onEvent: async (event) => {
+                switch (event.type) {
+                    case "invoice.paid":
+                        console.log(`Facture payée: ${event.id}`);
+                        break;
+                    case "payment_intent.succeeded":
+                        console.log(`Paiement réussi: ${event.id}`);
+                        break;
+                }
+            },
+            subscription: {
+                enabled: true,
+                plans: [
+                    {
+                        name: "FREE",
+                        limits: {
+                            projects: 3,
+                            storage: 100,
+                            api_requests: 1000
+                        }
+                    },
+                    {
+                        name: "PRO",
+                        priceId: process.env.STRIPE_PRICE_ID_PRO as string,
+                        limits: {
+                            projects: 10,
+                            storage: 5000,
+                            api_requests: 10000
+                        },
+                        freeTrial: {
+                            days: 14,
+                            onTrialStart: async (subscription) => {
+                                console.log(`Essai du plan PRO démarré pour l'abonnement ${subscription.id}`);
+                                // Envoyer un email de bienvenue pour l'essai
+                            },
+                            onTrialEnd: async ({ subscription }) => {
+                                console.log(`Essai du plan PRO terminé pour l'abonnement ${subscription.id}`);
+                                // Envoyer une notification de fin d'essai
+                            }
+                        }
+                    },
+                    {
+                        name: "ENTERPRISE",
+                        priceId: process.env.STRIPE_PRICE_ID_ENTERPRISE as string,
+                        limits: {
+                            projects: 50,
+                            storage: 50000,
+                            api_requests: 100000
+                        }
+                    }
+                ],
+                onSubscriptionComplete: async ({ subscription, plan }) => {
+                    console.log(`Abonnement ${subscription.id} créé pour le plan ${plan.name}`);
+                },
+                onSubscriptionUpdate: async ({ subscription }) => {
+                    console.log(`Abonnement ${subscription.id} mis à jour`);
+                },
+                onSubscriptionCancel: async ({ subscription, cancellationDetails }) => {
+                    console.log(`Abonnement ${subscription.id} annulé, raison: ${cancellationDetails?.reason || 'Non spécifiée'}`);
+                },
+                onSubscriptionDeleted: async ({ subscription }) => {
+                    console.log(`Abonnement ${subscription.id} supprimé`);
+                },
+                getCheckoutSessionParams: async ({ user, plan }) => {
+                    return {
+                        params: {
+                            allow_promotion_codes: true,
+                            tax_id_collection: {
+                                enabled: true
+                            },
+                            billing_address_collection: "required",
+                            custom_text: {
+                                submit: {
+                                    message: "Nous allons démarrer votre abonnement immédiatement"
+                                }
+                            },
+                            metadata: {
+                                userId: user.id
+                            }
+                        },
+                        options: {
+                            idempotencyKey: `sub_${user.id}_${plan.name}_${Date.now()}`
+                        }
+                    };
+                }
+            }
         })
     ]
 });

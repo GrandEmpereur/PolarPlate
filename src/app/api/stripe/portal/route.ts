@@ -21,16 +21,34 @@ export async function GET(request: NextRequest) {
             return new Response("Aucun abonnement Stripe trouvé", { status: 404 });
         }
 
-        // Créer une session pour le portail client
-        const session = await stripe.billingPortal.sessions.create({
-            customer: customerId as string,
-            return_url: `${request.nextUrl.origin}/dashboard`,
-        });
+        try {
+            // Créer une session pour le portail client
+            const session = await stripe.billingPortal.sessions.create({
+                customer: customerId as string,
+                return_url: `${request.nextUrl.origin}/dashboard`,
+            });
 
-        // Rediriger vers l'URL du portail
-        return Response.redirect(session.url);
+            // Rediriger vers l'URL du portail
+            return Response.redirect(session.url);
+        } catch (portalError: any) {
+            console.error("Erreur lors de la création de la session du portail client Stripe:", portalError);
+
+            // Si le portail n'est pas configuré, rediriger vers la page des paramètres d'abonnement
+            if (portalError.type === 'StripeInvalidRequestError' &&
+                portalError.message?.includes('No configuration provided')) {
+
+                // Alternative : rediriger vers la page de tarification
+                return Response.redirect(`${request.nextUrl.origin}/pricing?error=portal_not_configured`);
+            }
+
+            // Pour les autres erreurs, renvoyer une erreur 500
+            return new Response(
+                "Erreur lors de la création du portail client Stripe. Veuillez contacter le support.",
+                { status: 500 }
+            );
+        }
     } catch (error) {
-        console.error("Erreur lors de la création de la session du portail client Stripe:", error);
-        return new Response("Erreur lors de la création du portail client Stripe", { status: 500 });
+        console.error("Erreur générale lors de l'accès au portail:", error);
+        return new Response("Une erreur est survenue", { status: 500 });
     }
 } 

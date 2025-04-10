@@ -191,7 +191,8 @@ async function handleSubscriptionUpdated(subscription: StripeSubscriptionComplet
         cancel_at_period_end: subscription.cancel_at_period_end,
         canceled_at: subscription.canceled_at,
         trial_start: subscription.trial_start,
-        trial_end: subscription.trial_end
+        trial_end: subscription.trial_end,
+        status: subscription.status
     }));
 
     const customerId = typeof subscription.customer === 'string'
@@ -231,7 +232,7 @@ async function handleSubscriptionUpdated(subscription: StripeSubscriptionComplet
         let subscriptionStatus: SubscriptionStatus;
         switch (status) {
             case "active":
-                subscriptionStatus = "ACTIVE";
+                subscriptionStatus = subscription.cancel_at_period_end ? "CANCELED" : "ACTIVE";
                 break;
             case "canceled":
                 subscriptionStatus = "CANCELED";
@@ -258,7 +259,9 @@ async function handleSubscriptionUpdated(subscription: StripeSubscriptionComplet
         // Convertir les timestamps Unix en dates JavaScript
         const currentPeriodStart = toDate(subscription.current_period_start);
         const currentPeriodEnd = toDate(subscription.current_period_end);
-        const canceledAt = toDate(subscription.canceled_at);
+        const canceledAt = subscription.cancel_at_period_end || subscription.canceled_at ?
+            toDate(subscription.canceled_at) || new Date() :
+            null;
         const trialStart = toDate(subscription.trial_start);
         const trialEnd = toDate(subscription.trial_end);
 
@@ -309,12 +312,15 @@ async function handleSubscriptionUpdated(subscription: StripeSubscriptionComplet
         }
 
         // Mettre à jour le plan de l'utilisateur si l'abonnement est actif
-        if (status === "active" || status === "trialing") {
+        // Et ne pas le changer si l'abonnement est juste marqué pour annulation à la fin de la période
+        if ((status === "active" || status === "trialing") && !subscription.cancel_at_period_end) {
             await prisma.user.update({
                 where: { id: user.id },
                 data: { currentPlan: plan }
             });
             console.log(`Plan de l'utilisateur ${user.id} mis à jour vers ${plan}`);
+        } else if (subscription.cancel_at_period_end) {
+            console.log(`Plan de l'utilisateur ${user.id} maintenu à ${user.currentPlan} jusqu'à la fin de la période: ${safeCurrentPeriodEnd.toISOString()}`);
         }
 
         console.log(`Traitement de l'abonnement ${subscription.id} terminé avec succès`);
@@ -355,11 +361,21 @@ async function handleSubscriptionDeleted(subscription: StripeSubscriptionComplet
             }
         });
 
-        // Mettre à jour le plan de l'utilisateur à FREE
-        await prisma.user.update({
-            where: { id: existingSubscription.userId },
-            data: { currentPlan: "FREE" }
-        });
+        // Seulement mettre à jour le plan de l'utilisateur si la période de l'abonnement est terminée
+        // Vérifier si la date de fin de période est dépassée
+        const currentPeriodEnd = existingSubscription.currentPeriodEnd;
+        const now = new Date();
+
+        if (currentPeriodEnd < now) {
+            // La période payée est déjà terminée, donc on rétrograde immédiatement
+            await prisma.user.update({
+                where: { id: existingSubscription.userId },
+                data: { currentPlan: "FREE" }
+            });
+            console.log(`Plan de l'utilisateur ${existingSubscription.userId} rétrogradé à FREE immédiatement car la période est déjà terminée`);
+        } else {
+            console.log(`L'utilisateur ${existingSubscription.userId} conserve son plan jusqu'à ${currentPeriodEnd.toISOString()}`);
+        }
 
         console.log(`Abonnement ${subscription.id} marqué comme supprimé pour l'utilisateur ${existingSubscription.userId}`);
     } catch (error) {
