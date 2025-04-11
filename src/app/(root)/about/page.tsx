@@ -7,8 +7,33 @@ import { BadgeCheck, Heart, Zap, Shield, Users, Clock, ChevronRight, Award } fro
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useEffect, useState } from "react";
+
+// Hook personnalisé pour détecter la taille de l'écran de manière sécurisée
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+    const media = window.matchMedia(query);
+    if (media.matches !== matches) {
+      setMatches(media.matches);
+    }
+    
+    const listener = () => setMatches(media.matches);
+    window.addEventListener("resize", listener);
+    return () => window.removeEventListener("resize", listener);
+  }, [matches, query]);
+  
+  // Renvoyer false par défaut (comportement mobile)
+  // jusqu'à ce que le composant soit monté côté client
+  return mounted ? matches : false;
+}
 
 export default function AboutPage() {
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+
   return (
     <div className="container max-w-7xl mx-auto px-4 py-16 space-y-24">
       {/* Section d'introduction */}
@@ -78,15 +103,15 @@ export default function AboutPage() {
           </p>
         </div>
 
-        {/* Timeline révisée avec positionnement amélioré */}
+        {/* Timeline simplifiée avec alternance gauche-droite claire */}
         <div className="relative">
-          {/* Ligne centrale de la timeline - visible uniquement en desktop */}
-          <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 h-full w-0.5 bg-primary/30"></div>
+          {/* Ligne centrale visible uniquement en desktop */}
+          <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-0.5 bg-primary/30" />
           
-          {/* Ligne verticale mobile - visible uniquement sur mobile */}
-          <div className="md:hidden absolute left-7 h-full w-0.5 bg-primary/30"></div>
+          {/* Ligne verticale visible uniquement sur mobile */}
+          <div className="md:hidden absolute left-7 top-0 bottom-0 w-0.5 bg-primary/30" />
           
-          <div className="space-y-12 relative">
+          <div className="space-y-16 md:space-y-24">
             {timelineItems.map((item, index) => (
               <motion.div
                 key={index}
@@ -94,38 +119,59 @@ export default function AboutPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="relative grid grid-cols-1 md:grid-cols-2 gap-8 items-center"
               >
-                {/* Point sur la timeline */}
-                <div className="absolute md:left-1/2 left-7 transform md:-translate-x-1/2 -translate-y-1/2 top-1/2 z-10">
-                  <div className="h-14 w-14 rounded-full bg-primary/10 border-4 border-background flex items-center justify-center shadow-md">
-                    <item.icon className="h-6 w-6 text-primary" />
+                {/* Version mobile - toujours sur une colonne */}
+                <div className="md:hidden relative pl-16">
+                  {/* Point sur la timeline */}
+                  <div className="absolute left-7 top-7 transform -translate-x-1/2 -translate-y-1/2 z-10">
+                    <div className="h-12 w-12 rounded-full bg-primary/10 border-4 border-background flex items-center justify-center shadow-md">
+                      <item.icon className="h-5 w-5 text-primary" />
+                    </div>
+                  </div>
+                  
+                  <div className="bg-card/50 p-6 rounded-xl border border-border shadow-md hover:shadow-lg transition-shadow">
+                    <div className="font-mono text-sm text-primary/70">{item.date}</div>
+                    <h3 className="text-xl font-bold mt-2 mb-3">{item.title}</h3>
+                    <p className="text-muted-foreground">{item.description}</p>
                   </div>
                 </div>
                 
-                {/* Contenu gauche ou droite selon l'index */}
-                <div className={`${index % 2 === 0 ? 'md:col-start-1' : 'md:col-start-2'} ${index % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
-                  {index % 2 === 0 || window.innerWidth < 768 ? (
-                    <div className="md:pr-12 pl-16 md:pl-0">
-                      <div className="bg-card/50 p-6 rounded-xl border border-border shadow-md backdrop-blur-sm hover:shadow-lg transition-shadow">
-                        <div className="font-mono text-sm text-primary/70">{item.date}</div>
-                        <h3 className="text-xl font-bold mt-2 mb-3">{item.title}</h3>
-                        <p className="text-muted-foreground">{item.description}</p>
-                      </div>
+                {/* Version desktop - alternance gauche/droite */}
+                <div className="hidden md:flex items-center">
+                  {/* Point sur la timeline */}
+                  <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
+                    <div className="h-16 w-16 rounded-full bg-primary/10 border-4 border-background flex items-center justify-center shadow-md">
+                      <item.icon className="h-6 w-6 text-primary" />
                     </div>
-                  ) : null}
-                </div>
-                
-                <div className={`${index % 2 === 0 ? 'md:col-start-2' : 'md:col-start-1'} ${index % 2 === 1 ? 'md:text-right' : 'md:text-left'}`}>
-                  {index % 2 === 1 || window.innerWidth < 768 ? (
-                    <div className="md:pl-12 pl-16 md:pr-0">
-                      <div className="bg-card/50 p-6 rounded-xl border border-border shadow-md backdrop-blur-sm hover:shadow-lg transition-shadow">
-                        <div className="font-mono text-sm text-primary/70">{item.date}</div>
-                        <h3 className="text-xl font-bold mt-2 mb-3">{item.title}</h3>
-                        <p className="text-muted-foreground">{item.description}</p>
+                  </div>
+                  
+                  {/* Élément placé à gauche pour les indices pairs (0, 2, 4...) */}
+                  {index % 2 === 0 && (
+                    <>
+                      <div className="w-1/2 pr-12">
+                        <div className="ml-auto max-w-md bg-card/50 p-6 rounded-xl border border-border shadow-md hover:shadow-lg transition-shadow text-right">
+                          <div className="font-mono text-sm text-primary/70">{item.date}</div>
+                          <h3 className="text-xl font-bold mt-2 mb-3">{item.title}</h3>
+                          <p className="text-muted-foreground">{item.description}</p>
+                        </div>
                       </div>
-                    </div>
-                  ) : null}
+                      <div className="w-1/2"></div>
+                    </>
+                  )}
+                  
+                  {/* Élément placé à droite pour les indices impairs (1, 3, 5...) */}
+                  {index % 2 === 1 && (
+                    <>
+                      <div className="w-1/2"></div>
+                      <div className="w-1/2 pl-12">
+                        <div className="max-w-md bg-card/50 p-6 rounded-xl border border-border shadow-md hover:shadow-lg transition-shadow">
+                          <div className="font-mono text-sm text-primary/70">{item.date}</div>
+                          <h3 className="text-xl font-bold mt-2 mb-3">{item.title}</h3>
+                          <p className="text-muted-foreground">{item.description}</p>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </motion.div>
             ))}
