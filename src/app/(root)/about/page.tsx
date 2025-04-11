@@ -78,32 +78,58 @@ export default function AboutPage() {
           </p>
         </div>
 
-        <div className="relative border-l border-primary/30 ml-6 md:ml-[calc(50%-1px)] pl-8 md:pl-0 space-y-16">
-          {timelineItems.map((item, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`relative ${
-                index % 2 === 0 ? "md:ml-auto md:pl-8 md:pr-0" : "md:mr-auto md:pr-8 md:pl-0"
-              } ${index % 2 === 0 ? "md:text-left" : "md:text-right"} max-w-lg`}
-            >
-              <div 
-                className={`absolute top-0 ${
-                  index % 2 === 0 ? "md:-left-6 -left-14" : "md:-right-6 -left-14"
-                } h-12 w-12 rounded-full bg-primary/10 border-4 border-background flex items-center justify-center`}
+        {/* Timeline révisée avec positionnement amélioré */}
+        <div className="relative">
+          {/* Ligne centrale de la timeline - visible uniquement en desktop */}
+          <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 h-full w-0.5 bg-primary/30"></div>
+          
+          {/* Ligne verticale mobile - visible uniquement sur mobile */}
+          <div className="md:hidden absolute left-7 h-full w-0.5 bg-primary/30"></div>
+          
+          <div className="space-y-12 relative">
+            {timelineItems.map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="relative grid grid-cols-1 md:grid-cols-2 gap-8 items-center"
               >
-                <item.icon className="h-5 w-5 text-primary" />
-              </div>
-              <div className="bg-card/50 p-6 rounded-xl border border-border shadow-md">
-                <div className="font-mono text-sm text-primary/70">{item.date}</div>
-                <h3 className="text-xl font-bold mt-2 mb-3">{item.title}</h3>
-                <p className="text-muted-foreground">{item.description}</p>
-              </div>
-            </motion.div>
-          ))}
+                {/* Point sur la timeline */}
+                <div className="absolute md:left-1/2 left-7 transform md:-translate-x-1/2 -translate-y-1/2 top-1/2 z-10">
+                  <div className="h-14 w-14 rounded-full bg-primary/10 border-4 border-background flex items-center justify-center shadow-md">
+                    <item.icon className="h-6 w-6 text-primary" />
+                  </div>
+                </div>
+                
+                {/* Contenu gauche ou droite selon l'index */}
+                <div className={`${index % 2 === 0 ? 'md:col-start-1' : 'md:col-start-2'} ${index % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
+                  {index % 2 === 0 || window.innerWidth < 768 ? (
+                    <div className="md:pr-12 pl-16 md:pl-0">
+                      <div className="bg-card/50 p-6 rounded-xl border border-border shadow-md backdrop-blur-sm hover:shadow-lg transition-shadow">
+                        <div className="font-mono text-sm text-primary/70">{item.date}</div>
+                        <h3 className="text-xl font-bold mt-2 mb-3">{item.title}</h3>
+                        <p className="text-muted-foreground">{item.description}</p>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+                
+                <div className={`${index % 2 === 0 ? 'md:col-start-2' : 'md:col-start-1'} ${index % 2 === 1 ? 'md:text-right' : 'md:text-left'}`}>
+                  {index % 2 === 1 || window.innerWidth < 768 ? (
+                    <div className="md:pl-12 pl-16 md:pr-0">
+                      <div className="bg-card/50 p-6 rounded-xl border border-border shadow-md backdrop-blur-sm hover:shadow-lg transition-shadow">
+                        <div className="font-mono text-sm text-primary/70">{item.date}</div>
+                        <h3 className="text-xl font-bold mt-2 mb-3">{item.title}</h3>
+                        <p className="text-muted-foreground">{item.description}</p>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 

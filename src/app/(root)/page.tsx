@@ -347,7 +347,7 @@ export default function Home() {
   );
 }
 
-function StatItem({ value, label, icon }) {
+function StatItem({ value, label, icon }: { value: string, label: string, icon: React.ReactNode }) {
   return (
     <div className="text-center">
       <div className="flex justify-center mb-2">
